@@ -17,11 +17,6 @@ export const getMatrixChar = () => {
   return MATRIX_CHARS[index];
 };
 
-export interface MatrixCell {
-  colorNum: number;
-  char: string;
-}
-
 export interface CellRain {
   length: number;
   position: number;

@@ -4,7 +4,6 @@ const ColorCache: string[][] = [];
 
 export function getCellColor(length: number, index: number) {
   if (ColorCache[length]) {
-    console.log('cache hit');
     return ColorCache[length][index];
   } else if (length > 0) {
     const colors = ['#ccffcc', '#0aff0a', '#000'];

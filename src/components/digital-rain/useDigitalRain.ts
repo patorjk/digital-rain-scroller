@@ -1,7 +1,7 @@
 import type { CellRain } from '@/components/digital-rain/dr-utils.ts';
 import { useState, useEffect } from 'react';
 
-const stepsPerSecond = 5;
+const stepsPerSecond = 25;
 
 const emptyRain = (rows: number, cols: number): CellRain[][] => {
   return Array.from({ length: rows }, () =>
@@ -45,7 +45,7 @@ const moveRain = (rain: CellRain[][], rows: number, cols: number) => {
       const aboveCell = rain[row - 1][col];
 
       if (cell.length === 0) {
-        newRain[row][col] = structuredClone(aboveCell);
+        newRain[row][col] = { ...aboveCell };
       } else {
         if (cell.position + 1 >= cell.length) {
           newRain[row][col] = { position: 0, length: 0 };
@@ -57,7 +57,7 @@ const moveRain = (rain: CellRain[][], rows: number, cols: number) => {
         }
 
         if (aboveCell.length > 0 && aboveCell.position === 0) {
-          newRain[row][col] = structuredClone(aboveCell);
+          newRain[row][col] = { ...aboveCell };
         }
       }
     }
@@ -108,7 +108,7 @@ export const useDigitalRain = ({
 
     id = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(id);
-  }, [running, stepsPerSecond]);
+  }, [rain, running, rows, cols]);
 
   return { rain };
 };
