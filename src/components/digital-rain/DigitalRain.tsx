@@ -40,7 +40,7 @@ export const DigitalRain = ({ rows, cols }: DigitalRainProps) => {
   const virtualizer = useWindowVirtualizer({
     count: rows,
     estimateSize: () => BASE_SIZE,
-    overscan: 50,
+    overscan: 10,
     scrollMargin: listOffsetRef.current,
   });
 

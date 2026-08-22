@@ -1,7 +1,7 @@
 import type { CellRain } from '@/components/digital-rain/dr-utils.ts';
 import { useState, useEffect } from 'react';
 
-const stepsPerSecond = 25;
+const stepsPerSecond = 15;
 
 const emptyRain = (rows: number, cols: number): CellRain[][] => {
   return Array.from({ length: rows }, () =>
@@ -89,26 +89,29 @@ export const useDigitalRain = ({
     let id = 0;
 
     const loop = (now: number) => {
-      acc += Math.min(now - last, 250); // clamp so a hidden tab doesn't cause a huge catch-up burst
+      acc += Math.min(now - last, 250);
       last = now;
 
-      let stepped = false;
-      let nextRain = rain;
+      let steps = 0;
       while (acc >= interval) {
-        nextRain = moveRain(nextRain, rows, cols);
         acc -= interval;
-        stepped = true;
+        steps++;
       }
-      if (stepped) {
-        setRain(nextRain); // re-render
+      if (steps > 0) {
+        setRain((prev) => {
+          let next = prev;
+          for (let i = 0; i < steps; i++) {
+            next = moveRain(next, rows, cols);
+          }
+          return next;
+        });
       }
-
       id = requestAnimationFrame(loop);
     };
 
     id = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(id);
-  }, [rain, running, rows, cols]);
+  }, [running, rows, cols]);
 
   return { rain };
 };

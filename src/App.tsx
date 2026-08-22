@@ -4,7 +4,7 @@ import { DigitalRain } from '@/components/digital-rain/DigitalRain.tsx';
 function App() {
   return (
     <>
-      <DigitalRain rows={250} cols={30} />
+      <DigitalRain rows={1000} cols={80} />
     </>
   );
 }

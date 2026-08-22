@@ -12,7 +12,8 @@ export const MatrixRow = ({ rowText, rowRain }: MatrixRowProps) => {
       {rowText.map((item: string, index: number) => (
         <MatrixCellDisplay
           cellText={item}
-          cellRain={rowRain[index]}
+          rainLength={rowRain[index].length}
+          rainPosition={rowRain[index].position}
           key={index}
         />
       ))}

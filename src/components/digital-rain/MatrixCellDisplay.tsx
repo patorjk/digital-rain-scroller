@@ -1,26 +1,28 @@
 import { BASE_FONT_SIZE } from '@/components/digital-rain/DigitalRain.tsx';
-import type { CellRain } from '@/components/digital-rain/dr-utils.ts';
 import { getCellColor } from '@/components/digital-rain/color-cache.ts';
+import { memo } from 'react';
 
-interface MatrixCellDisplay {
+interface MatrixCellDisplayProps {
   cellText: string;
-  cellRain: CellRain;
+  rainLength: number;
+  rainPosition: number;
 }
 
-export const MatrixCellDisplay = ({
+export const MatrixCellDisplay = memo(function MatrixCellDisplay({
   cellText,
-  cellRain,
-}: MatrixCellDisplay) => {
+  rainLength,
+  rainPosition,
+}: MatrixCellDisplayProps) {
   return (
     <div
       style={{
         width: `${BASE_FONT_SIZE - 2}px`,
         display: 'flex',
         justifyContent: 'center',
-        color: getCellColor(cellRain.length, cellRain.position),
+        color: getCellColor(rainLength, rainPosition),
       }}
     >
       {cellText}
     </div>
   );
-};
+});
