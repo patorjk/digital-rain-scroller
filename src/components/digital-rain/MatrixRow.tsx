@@ -1,10 +1,21 @@
-import type {MatrixCell} from "@/components/digital-rain/dr-utils.ts";
-import {MatrixCellDisplay} from "@/components/digital-rain/MatrixCellDisplay.tsx";
+import { MatrixCellDisplay } from '@/components/digital-rain/MatrixCellDisplay.tsx';
+import type { CellRain } from '@/components/digital-rain/dr-utils.ts';
 
 interface MatrixRowProps {
-  row: MatrixCell[]
+  rowText: string[];
+  rowRain: CellRain[];
 }
 
-export const MatrixRow = ({row}: MatrixRowProps) => {
-  return <div style={{display:'flex'}}>{row.map((item, index) => <MatrixCellDisplay cell={item} key={index} />)}</div>
-}
+export const MatrixRow = ({ rowText, rowRain }: MatrixRowProps) => {
+  return (
+    <div style={{ display: 'flex', justifyContent: 'center' }}>
+      {rowText.map((item: string, index: number) => (
+        <MatrixCellDisplay
+          cellText={item}
+          cellRain={rowRain[index]}
+          key={index}
+        />
+      ))}
+    </div>
+  );
+};

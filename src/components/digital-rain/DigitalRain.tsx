@@ -1,12 +1,10 @@
 import { useMemo, useRef, useLayoutEffect } from 'react';
-import {
-  getMatrixChar,
-  type MatrixCell,
-} from '@/components/digital-rain/dr-utils.ts';
+import { getMatrixChar } from '@/components/digital-rain/dr-utils.ts';
 import { MatrixRow } from '@/components/digital-rain/MatrixRow.tsx';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
+import { useDigitalRain } from '@/components/digital-rain/useDigitalRain.ts';
 
-const BASE_FONT_SIZE = 24;
+export const BASE_FONT_SIZE = 24;
 export const BASE_SIZE = BASE_FONT_SIZE * 1.5;
 
 interface DigitalRainProps {
@@ -15,23 +13,22 @@ interface DigitalRainProps {
 }
 
 export const DigitalRain = ({ rows, cols }: DigitalRainProps) => {
-  const theMatrix: MatrixCell[][] = useMemo(() => {
+  const theMatrix: string[][] = useMemo(() => {
     const matrix = Array.from({ length: rows }, () =>
-      Array.from({ length: cols }, () => ({
-        char: '',
-        colorNum: 0,
-      })),
+      Array.from({ length: cols }, () => ''),
     );
 
     // fill chars up
-    for (let ii = 0; ii < matrix.length; ii++) {
-      for (let jj = 0; jj < matrix[ii].length; jj++) {
-        matrix[ii][jj].char = getMatrixChar();
+    for (let row = 0; row < matrix.length; row++) {
+      for (let col = 0; col < matrix[row].length; col++) {
+        matrix[row][col] = getMatrixChar();
       }
     }
 
     return matrix;
   }, [rows, cols]);
+
+  const { rain } = useDigitalRain({ rows, cols });
 
   const listRef = useRef<HTMLDivElement | null>(null);
   const listOffsetRef = useRef(0);
@@ -68,7 +65,7 @@ export const DigitalRain = ({ rows, cols }: DigitalRainProps) => {
           position: 'relative',
         }}
       >
-        {virtualizer.getVirtualItems().map((item, index) => (
+        {virtualizer.getVirtualItems().map((item) => (
           <div
             key={item.key}
             style={{
@@ -82,7 +79,10 @@ export const DigitalRain = ({ rows, cols }: DigitalRainProps) => {
               }px)`,
             }}
           >
-            <MatrixRow row={theMatrix[index]} />
+            <MatrixRow
+              rowText={theMatrix[item.index]}
+              rowRain={rain[item.index]}
+            />
           </div>
         ))}
       </div>

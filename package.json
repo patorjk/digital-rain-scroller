@@ -16,6 +16,7 @@
     "@tanstack/react-virtual": "^3.14.10",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "color-fader": "^0.3.0",
     "lucide-react": "^1.33.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",

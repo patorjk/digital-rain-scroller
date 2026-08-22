@@ -128,3 +128,8 @@
     @apply font-sans;
     }
 }
+
+html, body {
+  background-color: black;
+  color: white;
+}
