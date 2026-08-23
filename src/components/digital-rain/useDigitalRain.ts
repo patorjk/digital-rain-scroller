@@ -1,16 +1,6 @@
-import type { CellRain } from '@/components/digital-rain/dr-utils.ts';
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 const stepsPerSecond = 15;
-
-const emptyRain = (rows: number, cols: number): CellRain[][] => {
-  return Array.from({ length: rows }, () =>
-    Array.from({ length: cols }, () => ({
-      length: 0,
-      position: 0,
-    })),
-  );
-};
 
 const moveRain = (
   getLength: (row: number, col: number) => number,
@@ -20,30 +10,6 @@ const moveRain = (
   rows: number,
   cols: number,
 ) => {
-  const newRain = emptyRain(rows, cols);
-
-  // top cells are "generators", they randomly generate rain from empty (black) cells
-  for (let col = 0; col < cols; col++) {
-    const cellLength = getLength(0, col);
-    const cellPosition = getPosition(0, col);
-
-    if (cellLength === 0) {
-      if (Math.floor(Math.random() * 10) === 0) {
-        const newLength = Math.floor(Math.random() * 15) + 15; // random length + base length
-        setLength(0, col, newLength);
-        setPosition(0, col, 0);
-      }
-    } else {
-      if (cellPosition + 1 >= cellLength) {
-        setLength(0, col, 0);
-        setPosition(0, col, 0);
-      } else {
-        setLength(0, col, cellLength);
-        setPosition(0, col, cellPosition + 1);
-      }
-    }
-  }
-
   // update the board
   for (let row = rows - 1; row > 0; row--) {
     for (let col = 0; col < cols; col++) {
@@ -72,7 +38,27 @@ const moveRain = (
     }
   }
 
-  return newRain;
+  // top cells are "generators", they randomly generate rain from empty (black) cells
+  for (let col = 0; col < cols; col++) {
+    const cellLength = getLength(0, col);
+    const cellPosition = getPosition(0, col);
+
+    if (cellLength === 0) {
+      if (Math.floor(Math.random() * 10) === 0) {
+        const newLength = Math.floor(Math.random() * 15) + 15; // random length + base length
+        setLength(0, col, newLength);
+        setPosition(0, col, 0);
+      }
+    } else {
+      if (cellPosition + 1 >= cellLength) {
+        setLength(0, col, 0);
+        setPosition(0, col, 0);
+      } else {
+        setLength(0, col, cellLength);
+        setPosition(0, col, cellPosition + 1);
+      }
+    }
+  }
 };
 
 interface UseDigitalRainProps {
@@ -91,23 +77,23 @@ export const useDigitalRain = ({
   const [rainFrame, setRainFrame] = useState<number>(0);
   const getLength = useCallback(
     (row: number, col: number) => rainLength.current[row * cols + col],
-    [cols, rainLength],
+    [cols],
   );
   const setLength = useCallback(
     (row: number, col: number, val: number) => {
       rainLength.current[row * cols + col] = val;
     },
-    [cols, rainLength],
+    [cols],
   );
   const getPosition = useCallback(
     (row: number, col: number) => rainPosition.current[row * cols + col],
-    [cols, rainLength],
+    [cols],
   );
   const setPosition = useCallback(
     (row: number, col: number, val: number) => {
       rainPosition.current[row * cols + col] = val;
     },
-    [cols, rainLength],
+    [cols],
   );
 
   // rain animation

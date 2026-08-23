@@ -22,7 +22,6 @@ export const MatrixRow = ({
           cellText={item}
           rainLength={getLength(rowNum, index)}
           rainPosition={getPosition(rowNum, index)}
-          rainFrame={rainFrame}
           key={index}
         />
       ))}
