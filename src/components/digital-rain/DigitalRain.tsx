@@ -28,7 +28,7 @@ export const DigitalRain = ({ rows, cols }: DigitalRainProps) => {
     return matrix;
   }, [rows, cols]);
 
-  const { rain } = useDigitalRain({ rows, cols });
+  const { getPosition, getLength, rainFrame } = useDigitalRain({ rows, cols });
 
   const listRef = useRef<HTMLDivElement | null>(null);
   const listOffsetRef = useRef(0);
@@ -81,7 +81,10 @@ export const DigitalRain = ({ rows, cols }: DigitalRainProps) => {
           >
             <MatrixRow
               rowText={theMatrix[item.index]}
-              rowRain={rain[item.index]}
+              getPosition={getPosition}
+              getLength={getLength}
+              rowNum={item.index}
+              rainFrame={rainFrame}
             />
           </div>
         ))}

@@ -6,6 +6,7 @@ interface MatrixCellDisplayProps {
   cellText: string;
   rainLength: number;
   rainPosition: number;
+  rainFrame: number;
 }
 
 export const MatrixCellDisplay = memo(function MatrixCellDisplay({
