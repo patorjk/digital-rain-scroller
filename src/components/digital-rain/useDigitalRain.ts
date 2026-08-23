@@ -144,7 +144,7 @@ export const useDigitalRain = ({
 
   // this ensures the full rain-area has rain in it when it starts
   useEffect(() => {
-    for (let i = 0; i < Math.min(DEFAULT_NUM_ROWS, rows); i++) {
+    for (let i = 0; i < rows; i++) {
       moveRain(getLength, setLength, getPosition, setPosition, rows, cols);
     }
   }, []);

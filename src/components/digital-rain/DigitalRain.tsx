@@ -23,12 +23,12 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
 
     // fill chars up
     if (text) {
-      const matrixText = text.replace(/ /g, '·') + '·';
+      const matrixChars = Array.from(text.replace(/ /g, '·') + '·');
       for (let col = 0; col < cols; col++) {
-        const offset = Math.floor(matrixText.length * Math.random());
+        const offset = Math.floor(matrixChars.length * Math.random());
         for (let row = 0; row < rows; row++) {
-          const charIndex = (row + offset) % matrixText.length;
-          matrix[row][col] = matrixText.charAt(charIndex);
+          const charIndex = (row + offset) % matrixChars.length;
+          matrix[row][col] = matrixChars[charIndex];
         }
       }
     } else {
