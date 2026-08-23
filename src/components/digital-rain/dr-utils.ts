@@ -16,8 +16,6 @@ export const getMatrixChar = () => {
   const index = Math.floor(Math.random() * MATRIX_CHARS.length);
   return MATRIX_CHARS[index];
 };
-
-export interface CellRain {
-  length: number;
-  position: number;
-}
+export const BASE_FONT_SIZE = 24;
+export const BASE_SIZE = BASE_FONT_SIZE * 1.5;
+export const CELL_WIDTH = BASE_FONT_SIZE - 2;

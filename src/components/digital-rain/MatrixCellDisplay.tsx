@@ -1,25 +1,25 @@
-import { BASE_FONT_SIZE } from '@/components/digital-rain/DigitalRain.tsx';
-import { getCellColor } from '@/components/digital-rain/color-cache.ts';
 import { memo } from 'react';
+import { CELL_WIDTH } from '@/components/digital-rain/dr-utils.ts';
 
 interface MatrixCellDisplayProps {
   cellText: string;
-  rainLength: number;
-  rainPosition: number;
+  cellKey: number;
+  setCellRef: (key: number, el: HTMLDivElement | null) => void;
 }
 
 export const MatrixCellDisplay = memo(function MatrixCellDisplay({
   cellText,
-  rainLength,
-  rainPosition,
+  cellKey,
+  setCellRef,
 }: MatrixCellDisplayProps) {
   return (
     <div
+      ref={(el) => setCellRef(cellKey, el)}
       style={{
-        width: `${BASE_FONT_SIZE - 2}px`,
+        width: `${CELL_WIDTH}px`,
         display: 'flex',
         justifyContent: 'center',
-        color: getCellColor(rainLength, rainPosition),
+        color: '#000',
       }}
     >
       {cellText}

@@ -1,11 +1,13 @@
-import { useMemo, useRef, useLayoutEffect } from 'react';
-import { getMatrixChar } from '@/components/digital-rain/dr-utils.ts';
+import { useCallback, useLayoutEffect, useMemo, useRef } from 'react';
+import {
+  BASE_FONT_SIZE,
+  BASE_SIZE,
+  getMatrixChar,
+} from '@/components/digital-rain/dr-utils.ts';
 import { MatrixRow } from '@/components/digital-rain/MatrixRow.tsx';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useDigitalRain } from '@/components/digital-rain/useDigitalRain.ts';
-
-export const BASE_FONT_SIZE = 24;
-export const BASE_SIZE = BASE_FONT_SIZE * 1.5;
+import { getCellColor } from '@/components/digital-rain/color-cache.ts';
 
 interface DigitalRainProps {
   rows: number;
@@ -28,7 +30,27 @@ export const DigitalRain = ({ rows, cols }: DigitalRainProps) => {
     return matrix;
   }, [rows, cols]);
 
-  const { getPosition, getLength, rainFrame } = useDigitalRain({ rows, cols });
+  const cellRefs = useRef(new Map<number, HTMLDivElement>());
+  const setCellRef = useCallback((key: number, el: HTMLDivElement | null) => {
+    if (el) cellRefs.current.set(key, el);
+    else cellRefs.current.delete(key);
+  }, []);
+
+  const paintRef = useRef<() => void>(() => {});
+  const { getLength, getPosition } = useDigitalRain({
+    rows,
+    cols,
+    onFrame: () => paintRef.current(),
+  });
+  const paint = useCallback(() => {
+    const cells = cellRefs.current;
+    for (const [key, el] of cells) {
+      const row = (key / cols) | 0;
+      const col = key - row * cols;
+      el.style.color = getCellColor(getLength(row, col), getPosition(row, col));
+    }
+  }, [cols, getLength, getPosition]);
+  paintRef.current = paint;
 
   const listRef = useRef<HTMLDivElement | null>(null);
   const listOffsetRef = useRef(0);
@@ -42,6 +64,10 @@ export const DigitalRain = ({ rows, cols }: DigitalRainProps) => {
     estimateSize: () => BASE_SIZE,
     overscan: 10,
     scrollMargin: listOffsetRef.current,
+  });
+
+  useLayoutEffect(() => {
+    paint();
   });
 
   return (
@@ -81,10 +107,9 @@ export const DigitalRain = ({ rows, cols }: DigitalRainProps) => {
           >
             <MatrixRow
               rowText={theMatrix[item.index]}
-              getPosition={getPosition}
-              getLength={getLength}
               rowNum={item.index}
-              rainFrame={rainFrame}
+              cols={cols}
+              setCellRef={setCellRef}
             />
           </div>
         ))}

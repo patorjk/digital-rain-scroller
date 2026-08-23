@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 
 const stepsPerSecond = 15;
 
@@ -65,16 +65,18 @@ interface UseDigitalRainProps {
   rows: number;
   cols: number;
   running?: boolean;
+  onFrame?: () => void;
 }
 
 export const useDigitalRain = ({
   rows,
   cols,
   running = true,
+  onFrame,
 }: UseDigitalRainProps) => {
   const rainLength = useRef(new Int16Array(rows * cols));
   const rainPosition = useRef(new Int16Array(rows * cols));
-  const [rainFrame, setRainFrame] = useState<number>(0);
+
   const getLength = useCallback(
     (row: number, col: number) => rainLength.current[row * cols + col],
     [cols],
@@ -95,6 +97,16 @@ export const useDigitalRain = ({
     },
     [cols],
   );
+
+  const onFrameRef = useRef(onFrame);
+  onFrameRef.current = onFrame;
+
+  // this ensures the full rain-area has rain in it when it starts
+  useEffect(() => {
+    for (let i = 0; i < rows; i++) {
+      moveRain(getLength, setLength, getPosition, setPosition, rows, cols);
+    }
+  }, [rows, cols]);
 
   // rain animation
   useEffect(() => {
@@ -119,13 +131,7 @@ export const useDigitalRain = ({
           moveRain(getLength, setLength, getPosition, setPosition, rows, cols);
         }
 
-        setRainFrame((prev) => {
-          if (prev > 1000000000) {
-            return 0;
-          } else {
-            return prev + 1;
-          }
-        });
+        onFrameRef.current?.();
       }
       id = requestAnimationFrame(loop);
     };
@@ -134,5 +140,5 @@ export const useDigitalRain = ({
     return () => cancelAnimationFrame(id);
   }, [running, rows, cols]);
 
-  return { getLength, getPosition, rainFrame };
+  return { getLength, getPosition };
 };
