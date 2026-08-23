@@ -72,6 +72,7 @@ export const DigitalRain = ({ rows, cols }: DigitalRainProps) => {
 
   return (
     <div
+      aria-hidden={'true'}
       ref={listRef}
       className={'List'}
       style={{

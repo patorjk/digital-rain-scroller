@@ -44,7 +44,7 @@ const moveRain = (
     const cellPosition = getPosition(0, col);
 
     if (cellLength === 0) {
-      if (Math.floor(Math.random() * 10) === 0) {
+      if (Math.floor(Math.random() * 20) === 0) {
         const newLength = Math.floor(Math.random() * 15) + 15; // random length + base length
         setLength(0, col, newLength);
         setPosition(0, col, 0);
@@ -60,6 +60,25 @@ const moveRain = (
     }
   }
 };
+
+// this gets called when the user resizes the window and we have to adjust the grid
+function resizeGrid(
+  src: Int16Array,
+  oldRows: number,
+  oldCols: number,
+  newRows: number,
+  newCols: number,
+) {
+  const dst = new Int16Array(newRows * newCols);
+  const rowCount = Math.min(oldRows, newRows);
+  const colCount = Math.min(oldCols, newCols);
+  for (let row = 0; row < rowCount; row++) {
+    const oldBase = row * oldCols;
+    const newBase = row * newCols;
+    dst.set(src.subarray(oldBase, oldBase + colCount), newBase);
+  }
+  return dst;
+}
 
 interface UseDigitalRainProps {
   rows: number;
@@ -98,15 +117,36 @@ export const useDigitalRain = ({
     [cols],
   );
 
+  const prevRows = useRef(rows);
+  const prevCols = useRef(cols);
+  if (prevRows.current !== rows || prevCols.current !== cols) {
+    rainLength.current = resizeGrid(
+      rainLength.current,
+      prevRows.current,
+      prevCols.current,
+      rows,
+      cols,
+    );
+    rainPosition.current = resizeGrid(
+      rainPosition.current,
+      prevRows.current,
+      prevCols.current,
+      rows,
+      cols,
+    );
+    prevRows.current = rows;
+    prevCols.current = cols;
+  }
+
   const onFrameRef = useRef(onFrame);
   onFrameRef.current = onFrame;
 
   // this ensures the full rain-area has rain in it when it starts
   useEffect(() => {
-    for (let i = 0; i < rows; i++) {
+    for (let i = 0; i < Math.min(300, rows); i++) {
       moveRain(getLength, setLength, getPosition, setPosition, rows, cols);
     }
-  }, [rows, cols]);
+  }, []);
 
   // rain animation
   useEffect(() => {
