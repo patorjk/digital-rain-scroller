@@ -5,13 +5,15 @@ import { useRef } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { ConfigureMatrix } from '@/components/controls/ConfigureMatrix.tsx';
 import { Footer } from '@/components/controls/Footer.tsx';
+import { getParams } from '@/components/controls/basic-utils.ts';
 
 function App() {
   const htmlRef = useRef(document.documentElement);
+  const { text, rows } = getParams();
 
   const { width } = useResizeDetector({
     targetRef: htmlRef,
-    refreshMode: 'debounce', // optional: throttle noisy resize events
+    refreshMode: 'debounce',
     refreshRate: 100,
   });
 
@@ -20,7 +22,7 @@ function App() {
 
   return (
     <>
-      <DigitalRain rows={200} cols={cols} />
+      <DigitalRain rows={rows} cols={cols} text={text} />
       <ConfigureMatrix />
       <Footer />
     </>

@@ -12,18 +12,31 @@ import { getCellColor } from '@/components/digital-rain/color-cache.ts';
 interface DigitalRainProps {
   rows: number;
   cols: number;
+  text?: string;
 }
 
-export const DigitalRain = ({ rows, cols }: DigitalRainProps) => {
+export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
   const theMatrix: string[][] = useMemo(() => {
     const matrix = Array.from({ length: rows }, () =>
       Array.from({ length: cols }, () => ''),
     );
 
     // fill chars up
-    for (let row = 0; row < matrix.length; row++) {
-      for (let col = 0; col < matrix[row].length; col++) {
-        matrix[row][col] = getMatrixChar();
+    if (text) {
+      const matrixText = text.replace(/ /g, '·') + '·';
+      for (let col = 0; col < cols; col++) {
+        const offset = Math.floor(matrixText.length * Math.random());
+        for (let row = 0; row < rows; row++) {
+          const charIndex = (row + offset) % matrixText.length;
+          matrix[row][col] = matrixText.charAt(charIndex);
+        }
+      }
+    } else {
+      // no input text, so use matrix characters
+      for (let row = 0; row < matrix.length; row++) {
+        for (let col = 0; col < matrix[row].length; col++) {
+          matrix[row][col] = getMatrixChar();
+        }
       }
     }
 

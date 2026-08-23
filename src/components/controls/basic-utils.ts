@@ -1,4 +1,4 @@
-const DEFAULT_NUM_ROWS = 200;
+export const DEFAULT_NUM_ROWS = 300;
 
 export function getParams() {
   const params = new URLSearchParams(window.location.search);

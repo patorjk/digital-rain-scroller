@@ -1,4 +1,5 @@
 import { useEffect, useRef, useCallback } from 'react';
+import { DEFAULT_NUM_ROWS } from '@/components/controls/basic-utils.ts';
 
 const stepsPerSecond = 15;
 
@@ -143,7 +144,7 @@ export const useDigitalRain = ({
 
   // this ensures the full rain-area has rain in it when it starts
   useEffect(() => {
-    for (let i = 0; i < Math.min(300, rows); i++) {
+    for (let i = 0; i < Math.min(DEFAULT_NUM_ROWS, rows); i++) {
       moveRain(getLength, setLength, getPosition, setPosition, rows, cols);
     }
   }, []);
