@@ -44,7 +44,7 @@ const moveRain = (
     const cellPosition = getPosition(0, col);
 
     if (cellLength === 0) {
-      if (Math.floor(Math.random() * 20) === 0) {
+      if (Math.floor(Math.random() * 25) === 0) {
         const newLength = Math.floor(Math.random() * 15) + 15; // random length + base length
         setLength(0, col, newLength);
         setPosition(0, col, 0);
