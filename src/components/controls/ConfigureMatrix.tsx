@@ -39,6 +39,9 @@ export const ConfigureMatrix = () => {
           placeholder="Your text"
           value={text}
           onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') enterMatrix(e as any);
+          }}
         />
         <Button onClick={enterMatrix}>Enter the Matrix</Button>
         <Button onClick={() => setShowSettings((prev) => !prev)}>

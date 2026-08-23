@@ -1,5 +1,4 @@
 import { useEffect, useRef, useCallback } from 'react';
-import { DEFAULT_NUM_ROWS } from '@/components/controls/basic-utils.ts';
 
 const stepsPerSecond = 15;
 
