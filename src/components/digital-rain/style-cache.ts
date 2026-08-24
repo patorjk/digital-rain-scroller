@@ -7,22 +7,6 @@ interface CellStyle {
 const StyleCache: CellStyle[][] = [];
 const EMPTY_CELL: CellStyle = { color: '#000', shadow: 'none' };
 
-/*
-const ShadowByLevel: string[] = Array.from(
-  { length: SHADOW_LEVELS + 1 },
-  (_, i) => {
-    const b = i / SHADOW_LEVELS;
-    if (b < 0.25) return 'none';
-    if (b > 0.8)
-      return '0 0 4px rgba(255,255,255,0.9), 0 0 14px rgba(180,255,180,0.6)';
-    const radius = Math.round(4 + 6 * b);
-    const alpha = (0.55 * b).toFixed(2);
-    return `0 0 ${radius}px rgba(10,255,10,${alpha})`;
-  },
-);
-
- */
-
 // maps [a, b] to [c, d], ex: map [0, 0.5] and [1, 0]
 function mapRangeClamped(
   x: number,
