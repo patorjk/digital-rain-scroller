@@ -7,7 +7,7 @@ import {
 import { MatrixRow } from '@/components/digital-rain/MatrixRow.tsx';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useDigitalRain } from '@/components/digital-rain/useDigitalRain.ts';
-import { getCellColor } from '@/components/digital-rain/color-cache.ts';
+import { getCellData } from '@/components/digital-rain/style-cache.ts';
 
 interface DigitalRainProps {
   rows: number;
@@ -60,7 +60,12 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
     for (const [key, el] of cells) {
       const row = (key / cols) | 0;
       const col = key - row * cols;
-      el.style.color = getCellColor(getLength(row, col), getPosition(row, col));
+      const { color, shadow } = getCellData(
+        getLength(row, col),
+        getPosition(row, col),
+      );
+      el.style.color = color;
+      el.style.textShadow = shadow;
     }
   }, [cols, getLength, getPosition]);
   paintRef.current = paint;
@@ -91,6 +96,7 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
       style={{
         fontSize: `${BASE_FONT_SIZE}px`,
         fontFamily: "'Noto Sans JP', ui-monospace, sans-serif",
+        fontWeight: 'bold',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
