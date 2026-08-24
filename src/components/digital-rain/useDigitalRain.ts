@@ -209,7 +209,7 @@ export const useDigitalRain = ({
         setPosition,
         rows,
         cols,
-        true, // this runs all stands at full speed
+        true, // this runs all strands at full speed
       );
     }
   }, []);

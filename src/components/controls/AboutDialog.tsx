@@ -47,18 +47,15 @@ export function AboutDialog() {
     </>
   );
 
-  const button = (
-    <Button>
-      <Info />
-      About
-    </Button>
-  );
-
   if (isDesktop) {
     return (
       <Dialog>
         <form>
-          <DialogTrigger>{button}</DialogTrigger>
+          <DialogTrigger render={<Button />}>
+            {' '}
+            <Info />
+            About
+          </DialogTrigger>
           <DialogContent className="dark:bg-dark-dialog-background md:max-w-2xl max-sm:max-w-[425px]">
             <DialogHeader>
               <DialogTitle>About This App</DialogTitle>
@@ -68,8 +65,8 @@ export function AboutDialog() {
               {content}
             </div>
             <DialogFooter>
-              <DialogClose>
-                <Button variant="outline">Close</Button>
+              <DialogClose render={<Button variant="outline" />}>
+                Close
               </DialogClose>
             </DialogFooter>
           </DialogContent>
@@ -80,7 +77,11 @@ export function AboutDialog() {
 
   return (
     <Drawer>
-      <DrawerTrigger>{button}</DrawerTrigger>
+      <DrawerTrigger render={<Button />}>
+        {' '}
+        <Info />
+        About
+      </DrawerTrigger>
       <DrawerContent className={'dark:bg-dark-dialog-background'}>
         <DrawerHeader className="text-left">
           <DrawerTitle>About This App</DrawerTitle>
@@ -98,9 +99,7 @@ export function AboutDialog() {
           {content}
         </div>
         <DrawerFooter className="pt-2">
-          <DrawerClose>
-            <Button variant="outline">Close</Button>
-          </DrawerClose>
+          <DrawerClose render={<Button variant="outline" />}>Close</DrawerClose>
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
