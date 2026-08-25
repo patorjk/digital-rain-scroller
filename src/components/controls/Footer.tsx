@@ -8,8 +8,8 @@ export const Footer = () => {
   };
 
   return (
-    <footer className="grid grid-cols-3 items-center p-4">
-      <div />
+    <footer className="flex flex-wrap items-center justify-center gap-3 p-4  md:grid md:grid-cols-3">
+      <div className={'hidden md:block'} />
       <div className="flex justify-center gap-2">
         <Button onClick={goHome}>
           <IoHomeSharp />
@@ -17,7 +17,7 @@ export const Footer = () => {
         </Button>
         <AboutDialog />
       </div>
-      <span className="justify-self-end text-sm text-muted-foreground">
+      <span className="text-sm text-muted-foreground md:justify-self-end">
         Last Updated:{' '}
         {new Date(__BUILD_DATE__).toLocaleDateString(undefined, {
           year: 'numeric',
