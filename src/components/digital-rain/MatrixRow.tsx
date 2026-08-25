@@ -1,25 +1,25 @@
 import { MatrixCellDisplay } from '@/components/digital-rain/MatrixCellDisplay.tsx';
 
 interface MatrixRowProps {
-  rowText: string[];
+  theMatrix: Uint32Array;
   rowNum: number;
   cols: number;
   setCellRef: (key: number, el: HTMLDivElement | null) => void;
 }
 
 export const MatrixRow = ({
-  rowText,
+  theMatrix,
   rowNum,
   cols,
   setCellRef,
 }: MatrixRowProps) => {
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
-      {rowText.map((item: string, index: number) => (
+      {Array.from({ length: cols }).map((_item: unknown, col: number) => (
         <MatrixCellDisplay
-          cellText={item}
-          key={index}
-          cellKey={rowNum * cols + index}
+          cellText={String.fromCodePoint(theMatrix[rowNum * cols + col])}
+          key={col}
+          cellKey={rowNum * cols + col}
           setCellRef={setCellRef}
         />
       ))}

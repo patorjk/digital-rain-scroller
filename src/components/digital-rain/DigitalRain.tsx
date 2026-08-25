@@ -8,6 +8,7 @@ import { MatrixRow } from '@/components/digital-rain/MatrixRow.tsx';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { useDigitalRain } from '@/components/digital-rain/useDigitalRain.ts';
 import { getCellData } from '@/components/digital-rain/style-cache.ts';
+import { useFontsReady } from '@/components/digital-rain/useFontsReady.ts';
 
 interface DigitalRainProps {
   rows: number;
@@ -16,10 +17,8 @@ interface DigitalRainProps {
 }
 
 export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
-  const theMatrix: string[][] = useMemo(() => {
-    const matrix = Array.from({ length: rows }, () =>
-      Array.from({ length: cols }, () => ''),
-    );
+  const theMatrix = useMemo(() => {
+    const matrix = new Uint32Array(rows * cols);
 
     // fill chars up
     if (text) {
@@ -28,14 +27,14 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
         const offset = Math.floor(matrixChars.length * Math.random());
         for (let row = 0; row < rows; row++) {
           const charIndex = (row + offset) % matrixChars.length;
-          matrix[row][col] = matrixChars[charIndex];
+          matrix[row * cols + col] = matrixChars[charIndex].codePointAt(0) ?? 0;
         }
       }
     } else {
       // no input text, so use matrix characters
       for (let row = 0; row < matrix.length; row++) {
-        for (let col = 0; col < matrix[row].length; col++) {
-          matrix[row][col] = getMatrixChar();
+        for (let col = 0; col < cols; col++) {
+          matrix[row * cols + col] = getMatrixChar().codePointAt(0) ?? 0;
         }
       }
     }
@@ -88,6 +87,8 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
     paint();
   });
 
+  const isReady = useFontsReady();
+
   return (
     <div
       aria-hidden={'true'}
@@ -95,13 +96,15 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
       className={'List'}
       style={{
         fontSize: `${BASE_FONT_SIZE}px`,
-        fontFamily: "'Noto Sans JP', ui-monospace, sans-serif",
+        fontFamily: "Orbitron, 'Noto Sans JP', ui-monospace, sans-serif",
         fontWeight: 'bold',
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        overflowX: 'hidden',
+        overflow: 'visible',
         userSelect: 'none',
+        opacity: isReady ? 1 : 0,
+        transition: 'opacity 600ms ease',
       }}
     >
       <div
@@ -126,7 +129,7 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
             }}
           >
             <MatrixRow
-              rowText={theMatrix[item.index]}
+              theMatrix={theMatrix}
               rowNum={item.index}
               cols={cols}
               setCellRef={setCellRef}
