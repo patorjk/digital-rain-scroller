@@ -3,6 +3,8 @@ import {
   BASE_FONT_SIZE,
   BASE_SIZE,
   getMatrixChar,
+  MODE_BASIC,
+  MODE_CUSTOM,
 } from '@/components/digital-rain/dr-utils.ts';
 import { MatrixRow } from '@/components/digital-rain/MatrixRow.tsx';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
@@ -42,6 +44,10 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
     return matrix;
   }, [rows, cols]);
 
+  const dirtyText = useMemo(() => new Uint8Array(rows * cols), [rows, cols]);
+
+  const mode = text ? MODE_CUSTOM : MODE_BASIC;
+
   const cellRefs = useRef(new Map<number, HTMLDivElement>());
   const setCellRef = useCallback((key: number, el: HTMLDivElement | null) => {
     if (el) cellRefs.current.set(key, el);
@@ -53,7 +59,11 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
     rows,
     cols,
     onFrame: () => paintRef.current(),
+    matrix: theMatrix,
+    dirtyText,
+    mode,
   });
+
   const paint = useCallback(() => {
     const cells = cellRefs.current;
     for (const [key, el] of cells) {
@@ -65,8 +75,14 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
       );
       el.style.color = color;
       el.style.textShadow = shadow;
+
+      if (dirtyText[row * cols + col]) {
+        dirtyText[row * cols + col] = 0;
+        theMatrix[row * cols + col] = getMatrixChar().codePointAt(0) ?? 0;
+        el.textContent = String.fromCodePoint(theMatrix[row * cols + col]);
+      }
     }
-  }, [cols, getLength, getPosition]);
+  }, [cols, getLength, getPosition, theMatrix, dirtyText]);
   paintRef.current = paint;
 
   const listRef = useRef<HTMLDivElement | null>(null);
@@ -101,10 +117,11 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        overflow: 'visible',
+        overflow: 'hidden',
         userSelect: 'none',
         opacity: isReady ? 1 : 0,
         transition: 'opacity 600ms ease',
+        paddingBottom: '4px',
       }}
     >
       <div

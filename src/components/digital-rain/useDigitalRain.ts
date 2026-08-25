@@ -1,4 +1,9 @@
 import { useEffect, useRef, useCallback } from 'react';
+import { useLazyRef } from '@/components/utilities/useLazyRef.ts';
+import {
+  getMatrixChar,
+  MODE_BASIC,
+} from '@/components/digital-rain/dr-utils.ts';
 
 const stepsPerSecond = 20;
 
@@ -79,8 +84,11 @@ const moveRain = (
   setLength: (row: number, col: number, val: number) => void,
   getPosition: (row: number, col: number) => number,
   setPosition: (row: number, col: number, val: number) => void,
+  matrix: Uint32Array,
+  dirtyText: Uint8Array,
   rows: number,
   cols: number,
+  mode: string,
   skipAccumulatorCheck = false,
 ) => {
   // update the board
@@ -89,6 +97,17 @@ const moveRain = (
     if (rainAccum[col] >= 1 || skipAccumulatorCheck) {
       moveRainColumn(col, getLength, setLength, getPosition, setPosition, rows);
       rainAccum[col] = Math.max(rainAccum[col] - 1, 0);
+    }
+
+    // here we switch up the characters
+    for (let row = rows - 1; row > 0; row--) {
+      const rand = Math.floor(Math.random() * 40);
+      if (rand === 0) {
+        if (mode === MODE_BASIC) {
+          matrix[row * cols + col] = getMatrixChar().codePointAt(0) ?? 0;
+          dirtyText[row * cols + col] = 1;
+        }
+      }
     }
   }
 };
@@ -127,6 +146,9 @@ interface UseDigitalRainProps {
   cols: number;
   running?: boolean;
   onFrame?: () => void;
+  matrix: Uint32Array;
+  dirtyText: Uint8Array;
+  mode: string;
 }
 
 export const useDigitalRain = ({
@@ -134,12 +156,15 @@ export const useDigitalRain = ({
   cols,
   running = true,
   onFrame,
+  matrix,
+  dirtyText,
+  mode,
 }: UseDigitalRainProps) => {
-  const rainLength = useRef(new Int16Array(rows * cols));
-  const rainPosition = useRef(new Int16Array(rows * cols));
+  const rainLength = useLazyRef(() => new Int16Array(rows * cols));
+  const rainPosition = useLazyRef(() => new Int16Array(rows * cols));
 
-  const rainSpeed = useRef(getRainSpeeds(cols));
-  const rainSpeedAccumulation = useRef(getRainAccumulation(cols));
+  const rainSpeed = useLazyRef(() => getRainSpeeds(cols));
+  const rainSpeedAccumulation = useLazyRef(() => getRainAccumulation(cols));
 
   const getLength = useCallback(
     (row: number, col: number) => rainLength.current[row * cols + col],
@@ -207,8 +232,11 @@ export const useDigitalRain = ({
         setLength,
         getPosition,
         setPosition,
+        matrix,
+        dirtyText,
         rows,
         cols,
+        mode,
         true, // this runs all strands at full speed
       );
     }
@@ -241,8 +269,11 @@ export const useDigitalRain = ({
             setLength,
             getPosition,
             setPosition,
+            matrix,
+            dirtyText,
             rows,
             cols,
+            mode,
           );
         }
 
@@ -253,7 +284,7 @@ export const useDigitalRain = ({
 
     id = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(id);
-  }, [running, rows, cols]);
+  }, [running, rows, cols, mode]);
 
   return { getLength, getPosition };
 };

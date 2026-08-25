@@ -19,3 +19,6 @@ export const getMatrixChar = () => {
 export const BASE_FONT_SIZE = 24;
 export const BASE_SIZE = BASE_FONT_SIZE * 1;
 export const CELL_WIDTH = BASE_FONT_SIZE + 2;
+
+export const MODE_CUSTOM = 'custom';
+export const MODE_BASIC = 'basic';
