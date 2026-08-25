@@ -16,9 +16,15 @@ interface DigitalRainProps {
   rows: number;
   cols: number;
   text?: string;
+  rainColor?: string;
 }
 
-export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
+export const DigitalRain = ({
+  rows,
+  cols,
+  text = '',
+  rainColor = '#0aff0a',
+}: DigitalRainProps) => {
   const theMatrix = useMemo(() => {
     const matrix = new Uint32Array(rows * cols);
 
@@ -72,6 +78,7 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
       const { color, shadow } = getCellData(
         getLength(row, col),
         getPosition(row, col),
+        rainColor,
       );
       el.style.color = color;
       el.style.textShadow = shadow;
@@ -95,7 +102,7 @@ export const DigitalRain = ({ rows, cols, text = '' }: DigitalRainProps) => {
   const virtualizer = useWindowVirtualizer({
     count: rows,
     estimateSize: () => BASE_SIZE,
-    overscan: 10,
+    overscan: 20,
     scrollMargin: listOffsetRef.current,
   });
 

@@ -9,7 +9,7 @@ import { getParams } from '@/components/controls/basic-utils.ts';
 
 function App() {
   const htmlRef = useRef(document.documentElement);
-  const { text, rows } = getParams();
+  const { text, rows, color } = getParams();
 
   const { width } = useResizeDetector({
     targetRef: htmlRef,
@@ -22,7 +22,7 @@ function App() {
 
   return (
     <>
-      <DigitalRain rows={rows} cols={cols} text={text} />
+      <DigitalRain rows={rows} cols={cols} text={text} rainColor={color} />
       <ConfigureMatrix />
       <Footer />
     </>

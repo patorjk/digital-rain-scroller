@@ -36,12 +36,16 @@ const getShadowFromPosition = (
   }
 };
 
-export function getCellData(length: number, pos: number) {
+export function getCellData(
+  length: number,
+  pos: number,
+  color: string = '#0aff0a',
+) {
   if (length <= 0) return EMPTY_CELL;
   let styles = StyleCache[length];
   if (!styles) {
     const enhancer = 4;
-    const faded = fadeColors(['#eee', '#0aff0a', '#000'], length + enhancer);
+    const faded = fadeColors(['#eee', color, '#000'], length + enhancer);
     faded.splice(1, enhancer);
     styles = faded.map((rgba, index) => ({
       color: getCssRgbaColor(rgba),
