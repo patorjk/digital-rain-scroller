@@ -1,4 +1,5 @@
 export const DEFAULT_NUM_ROWS = 500;
+export const MATRIX_GREEN = '#227658'; // #0aff0a
 
 function isValidCSSColor(color: string): boolean {
   if (typeof window !== 'undefined' && window.CSS && window.CSS.supports) {
@@ -12,7 +13,7 @@ export function getParams() {
   const text = params.get('text') ?? '';
   let color = params.get('color') ?? '';
   if (!isValidCSSColor(color)) {
-    color = '#0aff0a';
+    color = MATRIX_GREEN;
   }
 
   const rowsParam = params.get('rows');

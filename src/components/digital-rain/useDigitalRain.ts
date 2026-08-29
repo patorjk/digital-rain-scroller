@@ -5,7 +5,7 @@ import {
   MODE_BASIC,
 } from '@/components/digital-rain/dr-utils.ts';
 
-const stepsPerSecond = 20;
+const stepsPerSecond = 25;
 
 /*
   Basic idea of the rain:
@@ -62,7 +62,7 @@ const moveRainColumn = (
 
   if (cellLength === 0) {
     if (Math.floor(Math.random() * 25) === 0) {
-      const newLength = Math.floor(Math.random() * 15) + 15; // random length + base length
+      const newLength = Math.floor(Math.random() * 25) + 10; // random length + base length
       setLength(0, col, newLength);
       setPosition(0, col, 0);
     }
@@ -101,7 +101,7 @@ const moveRain = (
 
     // here we switch up the characters
     for (let row = rows - 1; row > 0; row--) {
-      const rand = Math.floor(Math.random() * 40);
+      const rand = Math.floor(Math.random() * 30);
       if (rand === 0) {
         if (mode === MODE_BASIC) {
           matrix[row * cols + col] = getMatrixChar().codePointAt(0) ?? 0;
