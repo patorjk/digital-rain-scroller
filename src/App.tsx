@@ -6,6 +6,7 @@ import { useResizeDetector } from 'react-resize-detector';
 import { ConfigureMatrix } from '@/components/controls/ConfigureMatrix.tsx';
 import { Footer } from '@/components/controls/Footer.tsx';
 import { getParams } from '@/components/controls/basic-utils.ts';
+//import { useAutoScroll } from '@/components/controls/useAutoScroll.ts';
 
 function App() {
   const htmlRef = useRef(document.documentElement);
@@ -16,6 +17,8 @@ function App() {
     refreshMode: 'debounce',
     refreshRate: 100,
   });
+
+  //useAutoScroll(width ? 90 : null);
 
   if (!width) return null;
   const cols = Math.max(Math.floor(width / CELL_WIDTH), 1);

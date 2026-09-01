@@ -14,8 +14,12 @@ import {
   MODE_CUSTOM,
 } from '@/components/digital-rain/dr-utils.ts';
 import { useDigitalRain } from '@/components/digital-rain/useDigitalRain.ts';
-import { getCellData } from '@/components/digital-rain/style-cache.ts';
+import {
+  brighten,
+  getCellData,
+} from '@/components/digital-rain/style-cache.ts';
 import { useFontsReady } from '@/components/digital-rain/useFontsReady.ts';
+import { MATRIX_GREEN } from '@/components/controls/basic-utils.ts';
 
 interface DigitalRainProps {
   rows: number;
@@ -30,7 +34,7 @@ export const DigitalRain = ({
   rows,
   cols,
   text = '',
-  rainColor = '#0aff0a',
+  rainColor = MATRIX_GREEN,
 }: DigitalRainProps) => {
   const theMatrix = useMemo(() => {
     const matrix = new Uint32Array(rows * cols);
@@ -152,29 +156,58 @@ export const DigitalRain = ({
       }
     }
 
-    // Pass 2: Glow layer
-    for (let row = first; row < last; row++) {
-      const y = top + row * BASE_SIZE - scrollY + BASE_SIZE / 2;
-      const rowBase = row * cols;
-      for (let col = 0; col < cols; col++) {
-        const len = getLength(row, col);
-        if (len <= 0) continue;
+    // Pass 2: Bloom
+    if (typeof ctx.filter === 'string') {
+      ctx.fillStyle = brighten(rainColor, 120); //'#f4fff4';
+      for (let row = first; row < last; row++) {
+        const y = top + row * BASE_SIZE - scrollY + BASE_SIZE / 2;
+        const rowBase = row * cols;
+        for (let col = 0; col < cols; col++) {
+          const len = getLength(row, col);
+          if (len <= 0 || getPosition(row, col) !== 0) continue;
+          ctx.fillText(
+            String.fromCodePoint(theMatrix[rowBase + col]),
+            leftOffset + col * CELL_WIDTH + CELL_WIDTH / 2,
+            y,
+          );
+        }
+      }
 
-        const { color, glow } = getCellData(
-          len,
-          getPosition(row, col),
-          rainColor,
-        );
-        if (glow.length === 0) continue;
+      const dpr = window.devicePixelRatio || 1;
+      ctx.save();
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.filter = `blur(${4 * dpr}px)`; // tight glow
+      ctx.drawImage(canvas, 0, 0);
+      ctx.globalAlpha = 0.5;
+      ctx.filter = `blur(${14 * dpr}px)`; // wide halo
+      ctx.drawImage(canvas, 0, 0);
+      ctx.restore();
+    } else {
+      // fallback
+      for (let row = first; row < last; row++) {
+        const y = top + row * BASE_SIZE - scrollY + BASE_SIZE / 2;
+        const rowBase = row * cols;
+        for (let col = 0; col < cols; col++) {
+          const len = getLength(row, col);
+          if (len <= 0) continue;
 
-        const idx = rowBase + col;
-        const ch = String.fromCodePoint(theMatrix[idx]);
-        const x = leftOffset + col * CELL_WIDTH + CELL_WIDTH / 2;
-        ctx.fillStyle = color;
-        for (const layer of glow) {
-          ctx.shadowBlur = layer.blur;
-          ctx.shadowColor = layer.color;
-          ctx.fillText(ch, x, y);
+          const { color, glow } = getCellData(
+            len,
+            getPosition(row, col),
+            rainColor,
+          );
+          if (glow.length === 0) continue;
+
+          const idx = rowBase + col;
+          const ch = String.fromCodePoint(theMatrix[idx]);
+          const x = leftOffset + col * CELL_WIDTH + CELL_WIDTH / 2;
+          ctx.fillStyle = color;
+          for (const layer of glow) {
+            ctx.shadowBlur = layer.blur;
+            ctx.shadowColor = layer.color;
+            ctx.fillText(ch, x, y);
+          }
         }
       }
     }

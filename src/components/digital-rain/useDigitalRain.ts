@@ -5,7 +5,7 @@ import {
   MODE_BASIC,
 } from '@/components/digital-rain/dr-utils.ts';
 
-const stepsPerSecond = 25;
+const stepsPerSecond = 30;
 
 /*
   Basic idea of the rain:
