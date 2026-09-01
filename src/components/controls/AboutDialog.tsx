@@ -44,6 +44,16 @@ export function AboutDialog() {
   const content = (
     <>
       <p>Simple digital rain app.</p>
+      <p>
+        <span className="text-sm text-muted-foreground md:justify-self-end">
+          Last Updated:{' '}
+          {new Date(__BUILD_DATE__).toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+          })}
+        </span>
+      </p>
     </>
   );
 

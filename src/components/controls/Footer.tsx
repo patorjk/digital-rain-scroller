@@ -17,14 +17,6 @@ export const Footer = () => {
         </Button>
         <AboutDialog />
       </div>
-      <span className="text-sm text-muted-foreground md:justify-self-end">
-        Last Updated:{' '}
-        {new Date(__BUILD_DATE__).toLocaleDateString(undefined, {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-        })}
-      </span>
     </footer>
   );
 };
