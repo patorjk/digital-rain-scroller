@@ -8,6 +8,7 @@ import {
 import {
   BASE_FONT_SIZE,
   BASE_SIZE,
+  canvasFilterWorks,
   CELL_WIDTH,
   getMatrixChar,
   MODE_BASIC,
@@ -26,6 +27,7 @@ interface DigitalRainProps {
   cols: number;
   text?: string;
   rainColor?: string;
+  flashSignal?: number; // increment to flash all chars to full brightness
 }
 
 const FONT = `bold ${BASE_FONT_SIZE}px Orbitron, 'Noto Sans JP', ui-monospace, sans-serif`;
@@ -35,6 +37,7 @@ export const DigitalRain = ({
   cols,
   text = '',
   rainColor = MATRIX_GREEN,
+  flashSignal = 0,
 }: DigitalRainProps) => {
   const theMatrix = useMemo(() => {
     const matrix = new Uint32Array(rows * cols);
@@ -71,6 +74,7 @@ export const DigitalRain = ({
   const sizeRef = useRef({ cssW: 0, cssH: 0 });
 
   const paintRef = useRef<() => void>(() => {});
+  const flashRef = useRef(0); // 0 = no flash, 1 = all chars at full brightness
   const { getLength, getPosition } = useDigitalRain({
     rows,
     cols,
@@ -156,8 +160,30 @@ export const DigitalRain = ({
       }
     }
 
+    // Flash overlay: paint every rain char at full brightness, faded by the
+    // current flash intensity (drawn before the bloom pass so it glows too)
+    const flash = flashRef.current;
+    if (flash > 0) {
+      ctx.save();
+      ctx.globalAlpha = flash;
+      ctx.fillStyle = brighten(rainColor, 120);
+      for (let row = first; row < last; row++) {
+        const y = top + row * BASE_SIZE - scrollY + BASE_SIZE / 2;
+        const rowBase = row * cols;
+        for (let col = 0; col < cols; col++) {
+          if (getLength(row, col) <= 0) continue;
+          ctx.fillText(
+            String.fromCodePoint(theMatrix[rowBase + col]),
+            leftOffset + col * CELL_WIDTH + CELL_WIDTH / 2,
+            y,
+          );
+        }
+      }
+      ctx.restore();
+    }
+
     // Pass 2: Bloom
-    if (typeof ctx.filter === 'string') {
+    if (canvasFilterWorks()) {
       ctx.fillStyle = brighten(rainColor, 120); //'#f4fff4';
       for (let row = first; row < last; row++) {
         const y = top + row * BASE_SIZE - scrollY + BASE_SIZE / 2;
@@ -182,9 +208,15 @@ export const DigitalRain = ({
       ctx.globalAlpha = 0.5;
       ctx.filter = `blur(${14 * dpr}px)`; // wide halo
       ctx.drawImage(canvas, 0, 0);
+
+      ctx.globalAlpha = 0.15;
+      ctx.filter = `blur(${14 * dpr}px)`; // wide halo
+      ctx.drawImage(canvas, 0, 0);
+
       ctx.restore();
     } else {
       // fallback
+      const shadowScale = 2 * (window.devicePixelRatio || 1);
       for (let row = first; row < last; row++) {
         const y = top + row * BASE_SIZE - scrollY + BASE_SIZE / 2;
         const rowBase = row * cols;
@@ -204,7 +236,7 @@ export const DigitalRain = ({
           const x = leftOffset + col * CELL_WIDTH + CELL_WIDTH / 2;
           ctx.fillStyle = color;
           for (const layer of glow) {
-            ctx.shadowBlur = layer.blur;
+            ctx.shadowBlur = layer.blur * shadowScale;
             ctx.shadowColor = layer.color;
             ctx.fillText(ch, x, y);
           }
@@ -255,6 +287,32 @@ export const DigitalRain = ({
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, [resize]);
+
+  // flash animation: ramp all chars up to full brightness, then fade back
+  useEffect(() => {
+    if (!flashSignal) return;
+
+    const attack = 150; // ms to reach full brightness
+    const decay = 1500; // ms to fade back to normal rain
+    const start = performance.now();
+    let rafId = 0;
+
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      flashRef.current =
+        elapsed < attack
+          ? elapsed / attack
+          : Math.max(0, 1 - (elapsed - attack) / decay);
+      paintRef.current();
+      if (elapsed < attack + decay) rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      flashRef.current = 0;
+    };
+  }, [flashSignal]);
 
   const isReady = useFontsReady();
 

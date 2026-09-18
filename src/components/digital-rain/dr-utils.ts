@@ -23,6 +23,24 @@ export const CELL_WIDTH = BASE_FONT_SIZE + 2;
 export const MODE_CUSTOM = 'custom';
 export const MODE_BASIC = 'basic';
 
+let filterWorks: boolean | null = null;
+export const canvasFilterWorks = (): boolean => {
+  if (filterWorks !== null) return filterWorks;
+  const canvas = document.createElement('canvas');
+  canvas.width = 8;
+  canvas.height = 8;
+  const ctx = canvas.getContext('2d');
+  if (!ctx || typeof ctx.filter !== 'string') {
+    filterWorks = false;
+    return filterWorks;
+  }
+  ctx.filter = 'blur(2px)';
+  ctx.fillStyle = '#fff';
+  ctx.fillRect(3, 3, 2, 2);
+  filterWorks = ctx.getImageData(1, 4, 1, 1).data[3] > 0;
+  return filterWorks;
+};
+
 const charSets = [
   'aаạąäàáᴀₐᵃAΑΑ̇АᎪᗅꓮꓯＡ𝐀𝐴𝑨𝒜𝓐𝔄𝔸𝕬𝖠𝗔𝘈𝘼𝙰𝚨𝛢𝜜𝝖𝞐ᴬªɑǟ',
   'bƅᵇᵦBƁΒВᏴᏼᗷᛒℬꓐꞴＢᴮ',
